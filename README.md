@@ -7,13 +7,13 @@ O projeto permite criar, editar, concluir, excluir e filtrar tarefas com persist
 
  Funcionalidades
 
-- ✔ Criar tarefas com título, descrição e data de vencimento  
-- ✔ Listar todas as tarefas  
-- ✔ Editar tarefas existentes  
-- ✔ Marcar tarefas como concluídas  
-- ✔ Excluir tarefas  
-- ✔ Filtrar tarefas (pendentes / concluídas / todas)  
-- ✔ Interface simples integrada com API REST  
+-  Criar tarefas com título, descrição e data de vencimento  
+-  Listar todas as tarefas  
+-  Editar tarefas existentes  
+-  Marcar tarefas como concluídas  
+-  Excluir tarefas  
+-  Filtrar tarefas (pendentes / concluídas / todas)  
+-  Interface simples integrada com API REST  
 
 ---
 
