@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Todo App </title>
+</head>
+<body>
+
+<h1>Minhas Tarefas</h1>
+
+
+<input type="text" id="titulo" placeholder="Título">
+<input type="text" id="descricao" placeholder="Descrição">
+<input type="date" id="data">
+
+<button onclick="criarTarefa()">Criar</button>
+
+<hr>
+
+
+<button onclick="setFiltro('todas')">Todas</button>
+<button onclick="setFiltro('pendente')">Pendentes</button>
+<button onclick="setFiltro('concluida')">Concluídas</button>
+
+<hr>
+
+<ul id="lista-tarefas"></ul>
+
+<script>
+
+const API = "http://127.0.0.1:5000/api/tarefas/";
+let filtroAtual = "todas";
+
+
+async function listarTarefas() {
+    const res = await fetch(API);
+    const tarefas = await res.json();
+
+    const lista = document.getElementById("lista-tarefas");
+    lista.innerHTML = "";
+
+    let filtradas = tarefas;
+
+    if (filtroAtual !== "todas") {
+        filtradas = tarefas.filter(t => t.status === filtroAtual);
+    }
+
+    filtradas.forEach(t => {
+
+        const li = document.createElement("li");
+
+        const estilo = t.status === "concluida"
+            ? "text-decoration: line-through;"
+            : "";
+
+        li.innerHTML = `
+            <strong style="${estilo}">
+                ${t.titulo}
+            </strong>
+            <br>
+            ${t.descricao || ""}
+            <br>
+            📅 ${t.data_vencimento || "sem data"}
+            <br>
+            🔖 ${t.status}
+            <br>
+
+            <button onclick="concluirTarefa(${t.id})">✔️</button>
+            <button onclick="deletarTarefa(${t.id})">❌</button>
+
+            <hr>
+        `;
+
+        lista.appendChild(li);
+    });
+}
+
+
+async function criarTarefa() {
+    const titulo = document.getElementById("titulo").value;
+    const descricao = document.getElementById("descricao").value;
+    const data = document.getElementById("data").value;
+
+    if (!titulo) {
+        alert("Digite um título!");
+        return;
+    }
+
+    const tarefa = {
+        titulo: titulo,
+        descricao: descricao,
+        status: "pendente",
+        data_vencimento: data || null
+    };
+
+    await fetch(API, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(tarefa)
+    });
+
+    limparInputs();
+    listarTarefas();
+}
+
+
+async function concluirTarefa(id) {
+    await fetch(API + id, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            status: "concluida"
+        })
+    });
+
+    listarTarefas();
+}
+
+
+async function deletarTarefa(id) {
+    await fetch(API + id, {
+        method: "DELETE"
+    });
+
+    listarTarefas();
+}
+
+
+function setFiltro(filtro) {
+    filtroAtual = filtro;
+    listarTarefas();
+}
+
+function limparInputs() {
+    document.getElementById("titulo").value = "";
+    document.getElementById("descricao").value = "";
+    document.getElementById("data").value = "";
+}
+
+
+document.addEventListener("keypress", function(e) {
+    if (e.key === "Enter") criarTarefa();
+});
+
+
+window.onload = listarTarefas;
+
+</script>
+
+</body>
+</html>
